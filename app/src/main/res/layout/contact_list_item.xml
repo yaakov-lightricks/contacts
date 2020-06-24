@@ -4,13 +4,13 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/cardBackground"
         app:cardCornerRadius="24dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".ui.ContactDetailsActivity">
+            android:background="@drawable/grad_bg"
+            tools:context=".view.ContactDetailsActivity">
 
         <ImageView
                 android:id="@+id/thumbnail"

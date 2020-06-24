@@ -6,4 +6,8 @@ final public class Constants {
     public final static String KEY_CONTACTS = "KEY_CONTACTS";
     public final static String KEY_PROFILE_TRANSITION = "profile";
     public final static String KEY_LABEL_TRANSITION = "label";
+
+    public final static String ARG_ITEM_ID = "contactId";
+
+
 }

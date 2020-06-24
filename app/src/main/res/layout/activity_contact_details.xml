@@ -5,13 +5,14 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.ContactDetailsActivity">
+        tools:context=".view.ContactDetailsActivity">
 
     <ImageView
             android:id="@+id/contact_image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             tools:src="@drawable/profile"
+            android:transitionName="profile"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -23,6 +24,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:padding="12dp"
+            android:transitionName="label"
             android:textColor="@color/colorName"
             tools:text="android.devices@lightricks.com"
             android:background="@color/colorPrimaryDark"
