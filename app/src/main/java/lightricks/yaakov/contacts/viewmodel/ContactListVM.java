@@ -114,22 +114,13 @@ public class ContactListVM extends AndroidViewModel {
         return scrollPosition;
     }
 
-//    /**
-//     * get current hidden state of contact
-//     */
-//    public LiveData<Boolean> getIsHiddenLiveData() {
-//        return isHiddenLiveData;
-//    }
-
     public void updateScrollPosition(int position){
         scrollPosition.setValue(position);
     }
 
-    @SuppressWarnings("ConstantConditions")
     public void toggleContactVisibility(ContactEntry contactEntry){
         boolean isHidden = contactEntry.isHidden();
         prefs.edit().putBoolean(Constants.PREFIX_CONTACTS + contactEntry.id(), !isHidden).apply();
-//        isHiddenLiveData.setValue(!isHidden);
         contacts.refresh();
     }
 }
