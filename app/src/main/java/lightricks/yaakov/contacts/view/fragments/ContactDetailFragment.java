@@ -1,5 +1,6 @@
 package lightricks.yaakov.contacts.view.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.transition.TransitionInflater;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import lightricks.yaakov.contacts.Constants;
 import lightricks.yaakov.contacts.R;
@@ -34,12 +39,6 @@ public class ContactDetailFragment extends Fragment implements View.OnClickListe
     private ContactListVM model;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
-    }
-
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.activity_contact_details, container, false);
@@ -54,10 +53,14 @@ public class ContactDetailFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
+        postponeEnterTransition();
         model = new ViewModelProvider(requireActivity()).get(ContactListVM.class);
         if (getArguments() != null && getArguments().containsKey(Constants.ARG_ITEM_ID)) {
             int contactId = getArguments().getInt(Constants.ARG_ITEM_ID);
             LiveData<ContactEntry> contactById = model.getContactById(contactId);
+            thumbnail.setTransitionName(Constants.KEY_PROFILE_TRANSITION  + contactId);
+            textViewName.setTransitionName(Constants.KEY_LABEL_TRANSITION  + contactId);
             if (contactById != null) {
                 contactById.observe(getViewLifecycleOwner(), contactEntry -> {
                     if (contactEntry != null) {
@@ -72,6 +75,7 @@ public class ContactDetailFragment extends Fragment implements View.OnClickListe
         }
 
     }
+
 
     private void bindContact(ContactEntry contactItem) {
         textViewName.setText(contactItem.name());
@@ -88,7 +92,21 @@ public class ContactDetailFragment extends Fragment implements View.OnClickListe
         Glide
                 .with(this)
                 .load(contactItem.getThumbnailUri(getResources()))
+                .dontAnimate()
                 .centerCrop()
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        startPostponedEnterTransition();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        startPostponedEnterTransition();
+                        return false;
+                    }
+                })
                 .into(thumbnail);
     }
 

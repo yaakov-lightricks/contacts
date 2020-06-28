@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -16,10 +17,12 @@ import androidx.navigation.fragment.FragmentNavigator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.TransitionInflater;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import lightricks.yaakov.contacts.Constants;
 import lightricks.yaakov.contacts.R;
@@ -39,6 +42,7 @@ public class AllContactListFragment extends Fragment implements View.OnClickList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         model = new ViewModelProvider(requireActivity()).get(ContactListVM.class);
+        setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
     }
 
     @Override
@@ -49,8 +53,13 @@ public class AllContactListFragment extends Fragment implements View.OnClickList
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation()));
-        setupList();
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupList();
     }
 
     @Override
@@ -64,8 +73,13 @@ public class AllContactListFragment extends Fragment implements View.OnClickList
         String[] perms = {Manifest.permission.READ_CONTACTS};
         if (EasyPermissions.hasPermissions(requireContext(), perms)) {
             model.getVisibleContacts(requireContext().getApplicationContext()).observe(getViewLifecycleOwner(), contactEntries -> {
+                postponeEnterTransition(3, TimeUnit.SECONDS);
                 ContactsRecyclerAdapter adapter = new ContactsRecyclerAdapter(contactEntries, AllContactListFragment.this);
                 recyclerView.setAdapter(adapter);
+                recyclerView.getViewTreeObserver().addOnPreDrawListener(() -> {
+                    startPostponedEnterTransition();
+                    return true;
+                });
                 model.getScrollPosition().observe(getViewLifecycleOwner(), position -> recyclerView.scrollToPosition(position));
             });
         } else {
@@ -89,10 +103,12 @@ public class AllContactListFragment extends Fragment implements View.OnClickList
         model.updateScrollPosition(position);
         if (contactItem != null) {
             View thumb = view.findViewById(R.id.thumbnail);
+            thumb.setTransitionName(Constants.KEY_PROFILE_TRANSITION + contactItem.id());
             View labelView = view.findViewById(R.id.label_name);
+            labelView.setTransitionName(Constants.KEY_LABEL_TRANSITION + contactItem.id());
             FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder()
-                    .addSharedElement(thumb, Constants.KEY_PROFILE_TRANSITION )
-                    .addSharedElement(labelView, Constants.KEY_LABEL_TRANSITION)
+                    .addSharedElement(thumb, Constants.KEY_PROFILE_TRANSITION  + contactItem.id())
+                    .addSharedElement(labelView, Constants.KEY_LABEL_TRANSITION + contactItem.id())
                     .build();
             AllContactListFragmentDirections.MasterToDetailContact action = AllContactListFragmentDirections.masterToDetailContact();
             action.setContactId(contactItem.id());
