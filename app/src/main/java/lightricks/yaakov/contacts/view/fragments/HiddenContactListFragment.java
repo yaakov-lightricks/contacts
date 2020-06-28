@@ -42,7 +42,7 @@ public class HiddenContactListFragment extends Fragment implements View.OnClickL
     }
 
     private void setupList() {
-        model.getHiddenContacts(requireContext().getApplicationContext()).observe(getViewLifecycleOwner(), contactEntries -> {
+        model.getHiddenContacts().observe(getViewLifecycleOwner(), contactEntries -> {
             emptyListView.setVisibility(contactEntries.size() == 0 ? View.VISIBLE : View.GONE);
             ContactsRecyclerAdapter adapter = new ContactsRecyclerAdapter(contactEntries, HiddenContactListFragment.this);
             recyclerView.setAdapter(adapter);

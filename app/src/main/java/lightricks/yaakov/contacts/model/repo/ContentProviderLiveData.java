@@ -5,17 +5,24 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
 
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
 
-public abstract class ContentProviderLiveData<T> extends MutableLiveData<T> {
+public abstract class ContentProviderLiveData<T> extends LiveData<T> {
 
     final Context context;
     private final Uri uri;
-    private ContentObserver contentObserver;
+    private final ContentObserver contentObserver;
 
     protected ContentProviderLiveData(Context context, Uri uri) {
         this.context = context;
         this.uri = uri;
+        this.contentObserver = new ContentObserver(null) {
+            @Override
+            public void onChange(boolean selfChange) {
+                // Notify LiveData listeners an event has happened
+                refresh();
+            }
+        };
     }
 
     /**
@@ -26,13 +33,6 @@ public abstract class ContentProviderLiveData<T> extends MutableLiveData<T> {
 
     @Override
     protected void onActive() {
-        contentObserver = new ContentObserver(null) {
-            @Override
-            public void onChange(boolean selfChange) {
-                // Notify LiveData listeners an event has happened
-                refresh();
-            }
-        };
         context.getContentResolver().registerContentObserver(uri, true, contentObserver);
         refresh();
     }

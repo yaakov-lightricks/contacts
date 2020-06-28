@@ -72,7 +72,7 @@ public class AllContactListFragment extends Fragment implements View.OnClickList
     private void setupList() {
         String[] perms = {Manifest.permission.READ_CONTACTS};
         if (EasyPermissions.hasPermissions(requireContext(), perms)) {
-            model.getVisibleContacts(requireContext().getApplicationContext()).observe(getViewLifecycleOwner(), contactEntries -> {
+            model.getVisibleContacts().observe(getViewLifecycleOwner(), contactEntries -> {
                 postponeEnterTransition(3, TimeUnit.SECONDS);
                 ContactsRecyclerAdapter adapter = new ContactsRecyclerAdapter(contactEntries, AllContactListFragment.this);
                 recyclerView.setAdapter(adapter);

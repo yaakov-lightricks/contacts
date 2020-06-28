@@ -1,9 +1,6 @@
 package lightricks.yaakov.contacts.viewmodel;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,28 +12,26 @@ import androidx.lifecycle.Transformations;
 import java.util.ArrayList;
 import java.util.List;
 
-import lightricks.yaakov.contacts.Constants;
 import lightricks.yaakov.contacts.model.entities.ContactEntry;
-import lightricks.yaakov.contacts.model.repo.AllContactsLiveData;
+import lightricks.yaakov.contacts.model.repo.ContactRepo;
+import lightricks.yaakov.contacts.model.repo.ContactRepoImpl;
 
 public class ContactListVM extends AndroidViewModel {
 
+    private final ContactRepo contactRepo;
     //hold contacts data
-    private AllContactsLiveData contacts;
+    private final LiveData<List<ContactEntry>> contacts;
     //hold filtered contacts
     private LiveData<List<ContactEntry>> visibleContacts;
     //hold all hidden contacts
     private LiveData<List<ContactEntry>> hiddenContacts;
     //hold data about the adapter scrolling position
     private MutableLiveData<Integer> scrollPosition = new MutableLiveData<>(0);
-//    private MutableLiveData<Boolean> isHiddenLiveData = new MutableLiveData<>(false);
-
-    private final SharedPreferences prefs;
-
 
     public ContactListVM(@NonNull Application application) {
         super(application);
-        prefs = PreferenceManager.getDefaultSharedPreferences(application);
+        contactRepo = new ContactRepoImpl(application);
+        contacts = contactRepo.getContacts();
 
     }
 
@@ -44,11 +39,7 @@ public class ContactListVM extends AndroidViewModel {
      * get contacts of in this device
      * @return LiveData wrapper for contact list
      */
-    public LiveData<List<ContactEntry>> getVisibleContacts(Context context) {
-        //lazy loading contacts
-        if (contacts == null) {
-            contacts = new AllContactsLiveData(context);
-        }
+    public LiveData<List<ContactEntry>> getVisibleContacts() {
         if (visibleContacts == null) {
             visibleContacts = Transformations.switchMap(contacts, entries -> {
                 List<ContactEntry> visible = new ArrayList<>();
@@ -67,11 +58,7 @@ public class ContactListVM extends AndroidViewModel {
      * get contacts of in this device
      * @return LiveData wrapper for contact list
      */
-    public LiveData<List<ContactEntry>> getHiddenContacts(Context context) {
-        //lazy loading contacts
-        if (contacts == null) {
-            contacts = new AllContactsLiveData(context);
-        }
+    public LiveData<List<ContactEntry>> getHiddenContacts() {
         if (hiddenContacts == null) {
             hiddenContacts = Transformations.switchMap(contacts, entries -> {
                 List<ContactEntry> hidden = new ArrayList<>();
@@ -120,7 +107,6 @@ public class ContactListVM extends AndroidViewModel {
 
     public void toggleContactVisibility(ContactEntry contactEntry){
         boolean isHidden = contactEntry.isHidden();
-        prefs.edit().putBoolean(Constants.PREFIX_CONTACTS + contactEntry.id(), !isHidden).apply();
-        contacts.refresh();
+        contactRepo.setContactVisibility(contactEntry, !isHidden);
     }
 }
