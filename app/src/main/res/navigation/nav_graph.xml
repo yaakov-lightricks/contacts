@@ -8,7 +8,7 @@
 
     <fragment
             android:id="@+id/contact_list_fragment"
-            android:name="lightricks.yaakov.contacts.view.ContactListFragment"
+            android:name="lightricks.yaakov.contacts.view.fragments.AllContactListFragment"
             android:label="Contacts Demo"
             tools:layout="@layout/content_contacts_list">
         <action
@@ -20,11 +20,22 @@
                     android:defaultValue="-1" />
         </action>
 
+        <action
+                android:id="@+id/main_to_hidden_contacts"
+                app:destination="@id/hidden_contacts_fragment">
+        </action>
+
     </fragment>
 
     <fragment
             android:id="@+id/detail_fragment"
-            android:name="lightricks.yaakov.contacts.view.ContactDetailFragment"
+            android:name="lightricks.yaakov.contacts.view.fragments.ContactDetailFragment"
+            tools:layout="@layout/activity_contact_details" />
+
+    <fragment
+            android:id="@+id/hidden_contacts_fragment"
+            android:name="lightricks.yaakov.contacts.view.fragments.HiddenContactListFragment"
+            android:label="Hidden contacts"
             tools:layout="@layout/activity_contact_details" />
 
 </navigation>

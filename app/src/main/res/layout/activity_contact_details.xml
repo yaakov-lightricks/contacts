@@ -5,7 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.ContactDetailsActivity">
+        tools:context=".view.ContactsListActivity">
 
     <ImageView
             android:id="@+id/contact_image"
@@ -59,5 +59,16 @@
             android:layout_margin="32dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+            android:id="@+id/hide"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_unhide"
+            android:background="@drawable/squre_bg"
+            android:layout_margin="32dp"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

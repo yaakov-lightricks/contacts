@@ -2,7 +2,9 @@ package lightricks.yaakov.contacts.model.repo;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 
 import androidx.annotation.NonNull;
@@ -12,6 +14,7 @@ import androidx.annotation.WorkerThread;
 import java.util.ArrayList;
 import java.util.List;
 
+import lightricks.yaakov.contacts.Constants;
 import lightricks.yaakov.contacts.model.entities.ContactEntry;
 
 public class ContactsRetriever {
@@ -44,6 +47,7 @@ public class ContactsRetriever {
 
     @WorkerThread
     public static List<ContactEntry> getAllContacts(@NonNull Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         ContentResolver cr = context.getContentResolver();
         List<ContactEntry> items = new ArrayList<>();
         if (cr != null) {
@@ -64,7 +68,7 @@ public class ContactsRetriever {
                         number = cursor.getString(numberIndex);
                         thumbnail = cursor.getString(thumbnailIndex);
                         String email = getContactEmailById(context, lookUpId);
-                        items.add(ContactEntry.create(contactId, lookUpId, thumbnail, name, email, number));
+                        items.add(ContactEntry.create(contactId, lookUpId, thumbnail, name, email, number, prefs.getBoolean(Constants.PREFIX_CONTACTS + contactId, false)));
                     }
                 } finally {
                     cursor.close();

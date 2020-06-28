@@ -30,16 +30,20 @@ public abstract class ContentProviderLiveData<T> extends MutableLiveData<T> {
             @Override
             public void onChange(boolean selfChange) {
                 // Notify LiveData listeners an event has happened
-                postValue(getContentProviderValue());
+                refresh();
             }
         };
         context.getContentResolver().registerContentObserver(uri, true, contentObserver);
-        //don't want to block ui
-        AsyncTask.SERIAL_EXECUTOR.execute(() -> postValue(getContentProviderValue()));
+        refresh();
     }
 
     @Override
     protected void onInactive() {
         context.getContentResolver().unregisterContentObserver(contentObserver);
+    }
+
+    public void refresh(){
+        //don't want to block ui
+        AsyncTask.SERIAL_EXECUTOR.execute(() -> postValue(getContentProviderValue()));
     }
 }

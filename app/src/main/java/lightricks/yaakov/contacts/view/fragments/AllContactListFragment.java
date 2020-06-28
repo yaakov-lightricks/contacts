@@ -1,8 +1,10 @@
-package lightricks.yaakov.contacts.view;
+package lightricks.yaakov.contacts.view.fragments;
 
 import android.Manifest;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,12 +24,13 @@ import java.util.List;
 import lightricks.yaakov.contacts.Constants;
 import lightricks.yaakov.contacts.R;
 import lightricks.yaakov.contacts.model.entities.ContactEntry;
+import lightricks.yaakov.contacts.view.ContactsRecyclerAdapter;
 import lightricks.yaakov.contacts.viewmodel.ContactListVM;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class ContactListFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks {
+public class AllContactListFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks {
 
     private RecyclerView recyclerView;
     private ContactListVM model;
@@ -40,6 +43,7 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         View rootView = inflater.inflate(R.layout.content_contacts_list, container, false);
         recyclerView = rootView.findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
@@ -49,12 +53,18 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu, menu);
+    }
+
     @AfterPermissionGranted(Constants.CONTACT_PERMISSIONS)
     private void setupList() {
         String[] perms = {Manifest.permission.READ_CONTACTS};
         if (EasyPermissions.hasPermissions(requireContext(), perms)) {
-            model.getContacts(requireContext().getApplicationContext()).observe(getViewLifecycleOwner(), contactEntries -> {
-                ContactsRecyclerAdapter adapter = new ContactsRecyclerAdapter(contactEntries, ContactListFragment.this);
+            model.getVisibleContacts(requireContext().getApplicationContext()).observe(getViewLifecycleOwner(), contactEntries -> {
+                ContactsRecyclerAdapter adapter = new ContactsRecyclerAdapter(contactEntries, AllContactListFragment.this);
                 recyclerView.setAdapter(adapter);
                 model.getScrollPosition().observe(getViewLifecycleOwner(), position -> recyclerView.scrollToPosition(position));
             });
@@ -84,7 +94,7 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
                     .addSharedElement(thumb, Constants.KEY_PROFILE_TRANSITION )
                     .addSharedElement(labelView, Constants.KEY_LABEL_TRANSITION)
                     .build();
-            ContactListFragmentDirections.MasterToDetailContact action = ContactListFragmentDirections.masterToDetailContact();
+            AllContactListFragmentDirections.MasterToDetailContact action = AllContactListFragmentDirections.masterToDetailContact();
             action.setContactId(contactItem.id());
             Navigation.findNavController(view).navigate(action, extras);
         }
