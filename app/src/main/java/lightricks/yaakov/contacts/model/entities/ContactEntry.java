@@ -14,8 +14,8 @@ import lightricks.yaakov.contacts.R;
 @AutoValue
 public abstract class ContactEntry implements Parcelable {
 
-    public static ContactEntry create(int id, String lookupId, String thumbnail_path, String name, String email, String number, boolean isHidden) {
-        return new AutoValue_ContactEntry(id, lookupId, thumbnail_path, name, email, number, isHidden);
+    public static ContactEntry create(int id, String lookupId, String thumbnail_path, String name, String email, String number) {
+        return new AutoValue_ContactEntry(id, lookupId, thumbnail_path, name, email, number);
     }
 
     private static Uri placeHolder;
@@ -36,7 +36,7 @@ public abstract class ContactEntry implements Parcelable {
     @Nullable
     public abstract String number();
 
-    public abstract boolean isHidden();
+//    public abstract boolean isHidden();
 
 
     public Uri getThumbnailUri(Resources resources){

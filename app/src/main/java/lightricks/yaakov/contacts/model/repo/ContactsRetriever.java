@@ -14,7 +14,6 @@ import androidx.annotation.WorkerThread;
 import java.util.ArrayList;
 import java.util.List;
 
-import lightricks.yaakov.contacts.Constants;
 import lightricks.yaakov.contacts.model.entities.ContactEntry;
 
 public class ContactsRetriever {
@@ -68,7 +67,7 @@ public class ContactsRetriever {
                         number = cursor.getString(numberIndex);
                         thumbnail = cursor.getString(thumbnailIndex);
                         String email = getContactEmailById(context, lookUpId);
-                        items.add(ContactEntry.create(contactId, lookUpId, thumbnail, name, email, number, prefs.getBoolean(Constants.PREFIX_CONTACTS + contactId, false)));
+                        items.add(ContactEntry.create(contactId, lookUpId, thumbnail, name, email, number));
                     }
                 } finally {
                     cursor.close();

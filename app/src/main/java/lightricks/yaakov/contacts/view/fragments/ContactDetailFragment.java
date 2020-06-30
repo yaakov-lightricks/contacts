@@ -25,7 +25,9 @@ import com.bumptech.glide.request.target.Target;
 import lightricks.yaakov.contacts.Constants;
 import lightricks.yaakov.contacts.R;
 import lightricks.yaakov.contacts.model.entities.ContactEntry;
-import lightricks.yaakov.contacts.viewmodel.ContactListVM;
+import lightricks.yaakov.contacts.model.repo.ContactRepoImpl;
+import lightricks.yaakov.contacts.viewmodel.ContactsVM;
+import lightricks.yaakov.contacts.viewmodel.ContactsVmFactory;
 
 
 public class ContactDetailFragment extends Fragment implements View.OnClickListener {
@@ -36,7 +38,7 @@ public class ContactDetailFragment extends Fragment implements View.OnClickListe
     private TextView textViewHandle;
     private TextView textViewNumber;
     private View rootView = null;
-    private ContactListVM model;
+    private ContactsVM model;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,12 +57,12 @@ public class ContactDetailFragment extends Fragment implements View.OnClickListe
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
         postponeEnterTransition();
-        model = new ViewModelProvider(requireActivity()).get(ContactListVM.class);
+        model = new ViewModelProvider(requireActivity(), new ContactsVmFactory(new ContactRepoImpl(requireContext().getApplicationContext()))).get(ContactsVM.class);
         if (getArguments() != null && getArguments().containsKey(Constants.ARG_ITEM_ID)) {
             int contactId = getArguments().getInt(Constants.ARG_ITEM_ID);
             LiveData<ContactEntry> contactById = model.getContactById(contactId);
-            thumbnail.setTransitionName(Constants.KEY_PROFILE_TRANSITION  + contactId);
-            textViewName.setTransitionName(Constants.KEY_LABEL_TRANSITION  + contactId);
+            thumbnail.setTransitionName(Constants.KEY_PROFILE_TRANSITION + contactId);
+            textViewName.setTransitionName(Constants.KEY_LABEL_TRANSITION + contactId);
             if (contactById != null) {
                 contactById.observe(getViewLifecycleOwner(), contactEntry -> {
                     if (contactEntry != null) {
@@ -71,6 +73,7 @@ public class ContactDetailFragment extends Fragment implements View.OnClickListe
                         bindContact(contactEntry);
                     }
                 });
+                model.getContactDetailsIsHidden().observe(getViewLifecycleOwner(), isHidden -> hideIcon.setImageResource(isHidden ? R.drawable.ic_unhide : R.drawable.ic_hide));
             }
         }
 
@@ -88,7 +91,6 @@ public class ContactDetailFragment extends Fragment implements View.OnClickListe
         textViewNumber.setText(contactItem.number());
         hideIcon.setOnClickListener(this);
         hideIcon.setTag(contactItem);
-        hideIcon.setImageResource(contactItem.isHidden() ? R.drawable.ic_unhide : R.drawable.ic_hide);
         Glide
                 .with(this)
                 .load(contactItem.getThumbnailUri(getResources()))

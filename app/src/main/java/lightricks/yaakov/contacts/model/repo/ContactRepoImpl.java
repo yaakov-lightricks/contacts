@@ -4,31 +4,79 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lightricks.yaakov.contacts.Constants;
 import lightricks.yaakov.contacts.model.entities.ContactEntry;
 
+@SuppressWarnings("deprecation")
 public class ContactRepoImpl implements ContactRepo {
 
     private final SharedPreferences prefs;
     private ContactsLiveData contactsLiveData;
+    //hold filtered contacts
+    private LiveData<List<ContactEntry>> visibleContacts;
+    //hold all hidden contacts
+    private LiveData<List<ContactEntry>> hiddenContacts;
 
     public ContactRepoImpl(Context context) {
         this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
         this.contactsLiveData = new ContactsLiveData(context);
+        //todo remove duplications, find more efficient way for this
+        visibleContacts = Transformations.switchMap(contactsLiveData, entries -> {
+            List<ContactEntry> visible = new ArrayList<>();
+            for (ContactEntry entry : entries) {
+                if (!prefs.getBoolean(Constants.PREFIX_CONTACTS + entry.id(), false)){
+                    visible.add(entry);
+                }
+            }
+            return new MutableLiveData<>(visible);
+        });
+        hiddenContacts = Transformations.switchMap(contactsLiveData, entries -> {
+            List<ContactEntry> visible = new ArrayList<>();
+            for (ContactEntry entry : entries) {
+                if (prefs.getBoolean(Constants.PREFIX_CONTACTS + entry.id(), false)){
+                    visible.add(entry);
+                }
+            }
+            return new MutableLiveData<>(visible);
+        });
     }
 
     @Override
-    public LiveData<List<ContactEntry>> getContacts() {
-        return contactsLiveData;
+    public LiveData<List<ContactEntry>> getVisibleContacts() {
+        return visibleContacts;
     }
 
     @Override
-    public void setContactVisibility(ContactEntry contactEntry, boolean isHidden) {
-        prefs.edit().putBoolean(Constants.PREFIX_CONTACTS + contactEntry.id(), isHidden).apply();
+    public LiveData<List<ContactEntry>> getHiddenContacts() {
+        return hiddenContacts;
+    }
+
+    @Nullable
+    @Override
+    public LiveData<ContactEntry> getContactById(int id) {
+        return Transformations.switchMap(contactsLiveData, entries -> {
+            for (ContactEntry contactEntry : entries) {
+                if(contactEntry.id() == id){
+                    return new MutableLiveData<>(contactEntry);
+                }
+            }
+            return null;
+        });
+    }
+
+    @Override
+    public boolean toggleContactVisibility(ContactEntry contactEntry) {
+        boolean isHidden = prefs.getBoolean(Constants.PREFIX_CONTACTS + contactEntry.id(), false);
+        prefs.edit().putBoolean(Constants.PREFIX_CONTACTS + contactEntry.id(), !isHidden).apply();
         contactsLiveData.refresh();
+        return prefs.getBoolean(Constants.PREFIX_CONTACTS + contactEntry.id(), false);
     }
 }

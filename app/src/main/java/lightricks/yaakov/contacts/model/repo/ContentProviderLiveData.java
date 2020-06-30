@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
 
+@SuppressWarnings("deprecation")
 public abstract class ContentProviderLiveData<T> extends LiveData<T> {
 
     final Context context;

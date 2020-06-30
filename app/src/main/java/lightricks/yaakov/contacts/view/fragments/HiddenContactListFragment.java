@@ -14,19 +14,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import lightricks.yaakov.contacts.R;
 import lightricks.yaakov.contacts.model.entities.ContactEntry;
+import lightricks.yaakov.contacts.model.repo.ContactRepoImpl;
 import lightricks.yaakov.contacts.view.ContactsRecyclerAdapter;
-import lightricks.yaakov.contacts.viewmodel.ContactListVM;
+import lightricks.yaakov.contacts.viewmodel.ContactsVM;
+import lightricks.yaakov.contacts.viewmodel.ContactsVmFactory;
 
 public class HiddenContactListFragment extends Fragment implements View.OnClickListener {
 
     private RecyclerView recyclerView;
     private TextView emptyListView;
-    private ContactListVM model;
+    private ContactsVM model;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model = new ViewModelProvider(requireActivity()).get(ContactListVM.class);
+        model = new ViewModelProvider(requireActivity(),new ContactsVmFactory(new ContactRepoImpl(requireContext().getApplicationContext()))).get(ContactsVM.class);
     }
 
     @Override

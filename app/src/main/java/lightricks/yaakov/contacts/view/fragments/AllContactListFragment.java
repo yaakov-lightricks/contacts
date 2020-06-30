@@ -27,8 +27,10 @@ import java.util.concurrent.TimeUnit;
 import lightricks.yaakov.contacts.Constants;
 import lightricks.yaakov.contacts.R;
 import lightricks.yaakov.contacts.model.entities.ContactEntry;
+import lightricks.yaakov.contacts.model.repo.ContactRepoImpl;
 import lightricks.yaakov.contacts.view.ContactsRecyclerAdapter;
-import lightricks.yaakov.contacts.viewmodel.ContactListVM;
+import lightricks.yaakov.contacts.viewmodel.ContactsVM;
+import lightricks.yaakov.contacts.viewmodel.ContactsVmFactory;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -36,12 +38,12 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class AllContactListFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks {
 
     private RecyclerView recyclerView;
-    private ContactListVM model;
+    private ContactsVM model;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model = new ViewModelProvider(requireActivity()).get(ContactListVM.class);
+        model = new ViewModelProvider(requireActivity(),new ContactsVmFactory(new ContactRepoImpl(requireContext().getApplicationContext()))).get(ContactsVM.class);
         setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
     }
 
