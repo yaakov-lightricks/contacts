@@ -23,9 +23,10 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
 import lightricks.yaakov.contacts.Constants;
+import lightricks.yaakov.contacts.MyApplication;
 import lightricks.yaakov.contacts.R;
 import lightricks.yaakov.contacts.model.entities.ContactEntry;
-import lightricks.yaakov.contacts.model.repo.ContactRepoImpl;
+import lightricks.yaakov.contacts.model.repo.ContactRepo;
 import lightricks.yaakov.contacts.viewmodel.ContactsVM;
 import lightricks.yaakov.contacts.viewmodel.ContactsVmFactory;
 
@@ -43,7 +44,7 @@ public class ContactDetailFragment extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.activity_contact_details, container, false);
+            rootView = inflater.inflate(R.layout.fragment_contact_details, container, false);
             thumbnail = rootView.findViewById(R.id.contact_image);
             hideIcon = rootView.findViewById(R.id.hide);
             textViewName = rootView.findViewById(R.id.label_name);
@@ -57,7 +58,8 @@ public class ContactDetailFragment extends Fragment implements View.OnClickListe
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
         postponeEnterTransition();
-        model = new ViewModelProvider(requireActivity(), new ContactsVmFactory(new ContactRepoImpl(requireContext().getApplicationContext()))).get(ContactsVM.class);
+        ContactRepo contactRepo = ((MyApplication)requireActivity().getApplication()).getContactRepo();
+        model = new ViewModelProvider(requireActivity(),new ContactsVmFactory(contactRepo)).get(ContactsVM.class);
         if (getArguments() != null && getArguments().containsKey(Constants.ARG_ITEM_ID)) {
             int contactId = getArguments().getInt(Constants.ARG_ITEM_ID);
             LiveData<ContactEntry> contactById = model.getContactById(contactId);

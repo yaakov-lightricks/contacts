@@ -35,9 +35,7 @@ public class ContactsVM extends ViewModel {
      */
     public LiveData<List<ContactEntry>> getHiddenContacts() {
         return contactRepo.getHiddenContacts();
-
     }
-
 
     /**
      * get contact entry by it Id

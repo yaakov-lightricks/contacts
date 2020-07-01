@@ -25,9 +25,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import lightricks.yaakov.contacts.Constants;
+import lightricks.yaakov.contacts.MyApplication;
 import lightricks.yaakov.contacts.R;
 import lightricks.yaakov.contacts.model.entities.ContactEntry;
-import lightricks.yaakov.contacts.model.repo.ContactRepoImpl;
+import lightricks.yaakov.contacts.model.repo.ContactRepo;
 import lightricks.yaakov.contacts.view.ContactsRecyclerAdapter;
 import lightricks.yaakov.contacts.viewmodel.ContactsVM;
 import lightricks.yaakov.contacts.viewmodel.ContactsVmFactory;
@@ -43,7 +44,8 @@ public class AllContactListFragment extends Fragment implements View.OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model = new ViewModelProvider(requireActivity(),new ContactsVmFactory(new ContactRepoImpl(requireContext().getApplicationContext()))).get(ContactsVM.class);
+        ContactRepo contactRepo = ((MyApplication)requireActivity().getApplication()).getContactRepo();
+        model = new ViewModelProvider(requireActivity(), new ContactsVmFactory(contactRepo)).get(ContactsVM.class);
         setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
     }
 

@@ -12,9 +12,10 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import lightricks.yaakov.contacts.MyApplication;
 import lightricks.yaakov.contacts.R;
 import lightricks.yaakov.contacts.model.entities.ContactEntry;
-import lightricks.yaakov.contacts.model.repo.ContactRepoImpl;
+import lightricks.yaakov.contacts.model.repo.ContactRepo;
 import lightricks.yaakov.contacts.view.ContactsRecyclerAdapter;
 import lightricks.yaakov.contacts.viewmodel.ContactsVM;
 import lightricks.yaakov.contacts.viewmodel.ContactsVmFactory;
@@ -28,7 +29,8 @@ public class HiddenContactListFragment extends Fragment implements View.OnClickL
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model = new ViewModelProvider(requireActivity(),new ContactsVmFactory(new ContactRepoImpl(requireContext().getApplicationContext()))).get(ContactsVM.class);
+        ContactRepo contactRepo = ((MyApplication)requireActivity().getApplication()).getContactRepo();
+        model = new ViewModelProvider(requireActivity(),new ContactsVmFactory(contactRepo)).get(ContactsVM.class);
     }
 
     @Override

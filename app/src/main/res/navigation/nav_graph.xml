@@ -30,12 +30,12 @@
     <fragment
             android:id="@+id/detail_fragment"
             android:name="lightricks.yaakov.contacts.view.fragments.ContactDetailFragment"
-            tools:layout="@layout/activity_contact_details" />
+            tools:layout="@layout/fragment_contact_details" />
 
     <fragment
             android:id="@+id/hidden_contacts_fragment"
             android:name="lightricks.yaakov.contacts.view.fragments.HiddenContactListFragment"
             android:label="Hidden contacts"
-            tools:layout="@layout/activity_contact_details" />
+            tools:layout="@layout/fragment_contact_details" />
 
 </navigation>

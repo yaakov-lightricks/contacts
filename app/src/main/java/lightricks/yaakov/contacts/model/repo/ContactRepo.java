@@ -28,7 +28,7 @@ public interface ContactRepo {
      * @return {@link ContactEntry}
      */
     @Nullable
-    public LiveData<ContactEntry> getContactById(int id);
+    LiveData<ContactEntry> getContactById(int id);
 
     /**
      * toggle visibility for a contact

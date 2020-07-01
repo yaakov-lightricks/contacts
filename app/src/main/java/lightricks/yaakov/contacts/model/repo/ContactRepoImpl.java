@@ -1,8 +1,6 @@
 package lightricks.yaakov.contacts.model.repo;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -19,15 +17,15 @@ import lightricks.yaakov.contacts.model.entities.ContactEntry;
 public class ContactRepoImpl implements ContactRepo {
 
     private final SharedPreferences prefs;
-    private ContactsLiveData contactsLiveData;
+    private ContentProviderLiveData<List<ContactEntry>> contactsLiveData;
     //hold filtered contacts
     private LiveData<List<ContactEntry>> visibleContacts;
     //hold all hidden contacts
     private LiveData<List<ContactEntry>> hiddenContacts;
 
-    public ContactRepoImpl(Context context) {
-        this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        this.contactsLiveData = new ContactsLiveData(context);
+    public ContactRepoImpl(SharedPreferences prefs, ContentProviderLiveData<List<ContactEntry>> contactsLiveData) {
+        this.prefs = prefs;
+        this.contactsLiveData = contactsLiveData;
         //todo remove duplications, find more efficient way for this
         visibleContacts = Transformations.switchMap(contactsLiveData, entries -> {
             List<ContactEntry> visible = new ArrayList<>();
