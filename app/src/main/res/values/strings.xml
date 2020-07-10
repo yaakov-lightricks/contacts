@@ -3,4 +3,7 @@
     <string name="title_activity_contacts_list">ContactsListActivity</string>
     <string name="contacts_rationale">We need access to all your stuff!</string>
     <string name="revoke_permission">Approve needed permission!</string>
+    <string name="title_contact_list">Contacts</string>
+    <string name="title_contact_detail">Contact Detail</string>
+    <string name="list_is_empty">list is empty</string>
 </resources>

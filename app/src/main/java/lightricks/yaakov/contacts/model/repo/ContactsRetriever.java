@@ -2,16 +2,20 @@ package lightricks.yaakov.contacts.model.repo;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import lightricks.yaakov.contacts.model.entities.ContactItem;
+import lightricks.yaakov.contacts.Constants;
+import lightricks.yaakov.contacts.model.entities.ContactEntry;
 
 public class ContactsRetriever {
 
@@ -41,9 +45,11 @@ public class ContactsRetriever {
             ContactsContract.CommonDataKinds.Phone.NUMBER
     };
 
-    public static List<ContactItem> getAllContacts(@NonNull Context context) {
+    @WorkerThread
+    public static List<ContactEntry> getAllContacts(@NonNull Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         ContentResolver cr = context.getContentResolver();
-        List<ContactItem> items = new ArrayList<>();
+        List<ContactEntry> items = new ArrayList<>();
         if (cr != null) {
             Cursor cursor = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, PROJECTION, null, null, null);
             if (cursor != null && cursor.getCount() > 0) {
@@ -61,7 +67,8 @@ public class ContactsRetriever {
                         name = cursor.getString(nameIndex);
                         number = cursor.getString(numberIndex);
                         thumbnail = cursor.getString(thumbnailIndex);
-                        items.add(new ContactItem(contactId, lookUpId, thumbnail, name, number));
+                        String email = getContactEmailById(context, lookUpId);
+                        items.add(ContactEntry.create(contactId, lookUpId, thumbnail, name, email, number, prefs.getBoolean(Constants.PREFIX_CONTACTS + contactId, false)));
                     }
                 } finally {
                     cursor.close();
@@ -72,7 +79,7 @@ public class ContactsRetriever {
     }
 
     @Nullable
-    public static String getContactEmailById(@NonNull Context context, String lookupId) {
+    private static String getContactEmailById(@NonNull Context context, String lookupId) {
         String email = null;
         ContentResolver cr = context.getContentResolver();
         if (cr != null) {

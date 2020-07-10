@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nav_graph"
+        app:startDestination="@id/contact_list_fragment">
+
+    <fragment
+            android:id="@+id/contact_list_fragment"
+            android:name="lightricks.yaakov.contacts.view.fragments.AllContactListFragment"
+            android:label="Contacts Demo"
+            tools:layout="@layout/content_contacts_list">
+        <action
+                android:id="@+id/master_to_detail_contact"
+                app:destination="@id/detail_fragment">
+            <argument
+                    android:name="contactId"
+                    app:argType="integer"
+                    android:defaultValue="-1" />
+        </action>
+
+        <action
+                android:id="@+id/main_to_hidden_contacts"
+                app:destination="@id/hidden_contacts_fragment">
+        </action>
+
+    </fragment>
+
+    <fragment
+            android:id="@+id/detail_fragment"
+            android:name="lightricks.yaakov.contacts.view.fragments.ContactDetailFragment"
+            tools:layout="@layout/activity_contact_details" />
+
+    <fragment
+            android:id="@+id/hidden_contacts_fragment"
+            android:name="lightricks.yaakov.contacts.view.fragments.HiddenContactListFragment"
+            android:label="Hidden contacts"
+            tools:layout="@layout/activity_contact_details" />
+
+</navigation>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+            android:id="@+id/hidden_contacts_fragment"
+            android:icon="@drawable/ic_hide"
+            android:title="show hidden"
+            app:showAsAction="always" />
+
+</menu>
